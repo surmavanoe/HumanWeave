@@ -10,7 +10,7 @@ I wanted to connect the different parts of content creation in one project: find
 
 ## How the workflow is organized
 
-1. **Choose a person and profession.** An AI step proposes a subject, with stored workflow memory available to help avoid repeats.
+1. **Choose a topic.** An AI step proposes a profession, hobby, craft, sport, or specialist field, using Baserow records to help avoid repeats. Later research steps select a real person associated with it.
 2. **Research and check the subject.** Wikipedia searches and biography information feed additional AI checks, including a person/profession relationship check. Conditional branches handle retries.
 3. **Draft the post.** An AI writing step turns the research into content.
 4. **Prepare visuals.** The workflow includes Wikipedia and Wikimedia Commons image searches, a portrait fallback search, and a branch for generating an illustrative image with Stable Diffusion WebUI Forge.
@@ -41,7 +41,8 @@ This diagram summarizes the architecture; it is not an exact map of every node o
 | --- | --- |
 | **n8n Cloud** | Main visual workflow builder and automation engine; connects the research, AI, image, storage, and publishing steps. |
 | **Baserow** | Database and memory layer for storing workflow records and tracking previously selected subjects through row operations. |
-| **Ollama** | Provides the language model connection used by the AI steps. |
+| **Ollama** | Runs the language model used by the AI steps. |
+| **Qwen3 8B (`qwen3:8b`)** | The language model configured for topic selection, research checks, post writing, and image-prompt creation. |
 | **Wikipedia / MediaWiki API** | Subject searches, biography information, and image discovery. |
 | **Wikimedia Commons** | Portrait and field-related image searches, including a fallback when a Wikipedia image is missing. |
 | **Stable Diffusion WebUI Forge** | Runs local image generation and exposes the text-to-image API used by n8n. |
@@ -50,7 +51,7 @@ This diagram summarizes the architecture; it is not an exact map of every node o
 | **Cloudinary** | Uploads and hosts generated images so downstream services can access them by URL. |
 | **Buffer** | Bridges the workflow to LinkedIn publishing. |
 | **LinkedIn** | Intended destination for the posts. |
-| **GitHub** | Hosts the project documentation and, once prepared, the shareable workflow export. |
+| **GitHub** | Hosts the project documentation and sanitized workflow export. |
 | **OpenAI Codex** | Development and setup helper: assisted with configuration, troubleshooting, workflow integration, and repository preparation. |
 | **Claude** | Prompt helper: assisted with writing and refining prompts. |
 
@@ -74,13 +75,13 @@ That experience taught me that building an automation is also about working with
 
 ## Project status
 
-HumanWeave is a work in progress. This repository currently documents the project; the sanitized, importable n8n workflow export is still pending. The architecture above reflects the workflow reviewed during repository preparation and does not imply that every branch has passed an end-to-end test.
+HumanWeave is a work in progress. The [32-node n8n workflow](HumanWeave.json) is available as a sanitized template, with credentials removed and account-specific settings replaced by placeholders. Follow the [setup guide](SETUP.md) after importing it into your own n8n instance. It requires configuration and has not been tested end to end as a fresh installation.
 
-The portrait fallback branch was still being developed in the latest setup work. Review and test that path before relying on it for unattended publishing.
+The portrait fallback branch is unfinished. The export also retains a fragile memory-field reference, conflicting writing-prompt instructions, and a retry loop without an enforced limit. These are documented in [Known limitations](SETUP.md#known-limitations); the original workflow logic has been preserved.
 
 ## Recreating the setup
 
-Once the sanitized workflow export is available, a separate installation will need its own:
+A separate installation needs its own:
 
 - n8n instance and Baserow tables for workflow records and memory.
 - Ollama service and the chosen language model.

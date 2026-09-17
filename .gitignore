@@ -1,0 +1,17 @@
+# Credentials and local configuration
+.env
+.env.*
+!.env.example
+credentials*.json
+*credentials*.json
+
+# Unreviewed workflow exports and execution data
+My workflow*.json
+*.raw.json
+executions/
+backups/
+
+# Local files
+.DS_Store
+Thumbs.db
+__pycache__/
